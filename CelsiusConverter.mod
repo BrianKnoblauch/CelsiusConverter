@@ -9,6 +9,9 @@ FROM Windows IMPORT BeginPaint, CreateWindowEx, CS_SET, CW_USEDEFAULT, DefWindow
 CONST
      g_szClassName = "myWindowClass";
 
+VAR
+     fahrenheit : ARRAY [0..4] OF CHAR;
+
 PROCEDURE ["StdCall"] WndProc(hwnd : HWND; msg : UINT; wParam : WPARAM;  lParam : LPARAM): LRESULT;
 VAR
      hdc : HDC;	
@@ -22,7 +25,7 @@ BEGIN
       TextOut(hdc, 90, 5, ":", 1);
       TextOut(hdc, 5, 45, "Fahrenheit", 10);
       TextOut(hdc, 90, 45, ":", 1);            
-      (* TODO - f output text (we can calculate length) that convert button setup for us *)      
+      TextOut(hdc, 110, 45, fahrenheit, 4);
       EndPaint(hwnd, ps);      
       RETURN 0;
     | WM_CLOSE   :
