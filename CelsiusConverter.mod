@@ -1,9 +1,10 @@
 MODULE CelsiusConverter;
 
 FROM SYSTEM  IMPORT ADR;
-FROM Windows IMPORT CreateWindowEx, CS_SAVEBITS, CW_USEDEFAULT, DefWindowProc, DestroyWindow, DispatchMessage, GetMessage, HWND, IDC_ARROW,
+FROM Windows IMPORT CreateWindowEx, CS_SAVEBITS, CW_USEDEFAULT, DefWindowProc, DestroyWindow, DispatchMessage, GetMessage, HWND, HWND_TOPMOST, IDC_ARROW,
                     IDI_APPLICATION, LoadCursor, LoadIcon, LPARAM, LRESULT, MB_ICONEXCLAMATION, MB_OK, MessageBox, MSG, MyInstance, PostQuitMessage,
-                    RegisterClass, TranslateMessage, UINT, WM_CLOSE, WM_DESTROY, WNDCLASS, WPARAM, WS_EX_CLIENTEDGE, WS_OVERLAPPEDWINDOW;
+                    RegisterClass, SetWindowPos, ShowWindow, SW_SHOWNORMAL, SWP_NOZORDER, TranslateMessage, UINT, WM_CLOSE, WM_DESTROY, WNDCLASS, WPARAM,
+		    WS_EX_CLIENTEDGE, WS_OVERLAPPEDWINDOW;
 
 CONST
      g_szClassName = "myWindowClass";
@@ -52,6 +53,9 @@ BEGIN
        MessageBox(NIL, "Window Creation failed!", "Error!", MB_ICONEXCLAMATION + MB_OK);
        RETURN ;
     END;
+
+    SetWindowPos(hwnd, HWND_TOPMOST, 80, 40, 640, 480, SWP_NOZORDER);
+    ShowWindow(hwnd, SW_SHOWNORMAL);
             
     (* The Message Loop *)
     WHILE GetMessage( Msg, NIL, 0, 0) DO
