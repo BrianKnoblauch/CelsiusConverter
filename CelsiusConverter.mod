@@ -4,7 +4,7 @@ FROM SYSTEM  IMPORT ADR, CAST;
 FROM Windows IMPORT BeginPaint, CreateWindowEx, CS_SET, CW_USEDEFAULT, DefWindowProc, DestroyWindow, DispatchMessage, EndPaint, GetMessage, HDC, HWND,
                     IDC_ARROW, IDI_APPLICATION, LoadCursor, LoadIcon, LPARAM, LRESULT, MB_ICONEXCLAMATION, MB_OK, MessageBox, MSG, MyInstance, PAINTSTRUCT,
 		    PostQuitMessage, RegisterClass, ShowWindow, SW_SHOWNORMAL, TextOut, TranslateMessage, UINT, WM_CLOSE, WM_DESTROY, WM_PAINT, WNDCLASS,
-		    WPARAM, WS_EX_CLIENTEDGE, WS_OVERLAPPEDWINDOW;
+		    WPARAM, WS_CHILD, WS_EX_CLIENTEDGE, WS_OVERLAPPEDWINDOW;
 
 CONST
      g_szClassName = "myWindowClass";
@@ -40,6 +40,7 @@ END WndProc;
 VAR
     className       : ARRAY [0..14] OF CHAR;
     hwnd            : HWND;
+    inputhwnd       : HWND;
     Msg             : MSG;
     wc              : WNDCLASS;
 
@@ -69,9 +70,10 @@ BEGIN
        RETURN ;
     END;
 
-    (* TODO - Create c input box/window *)
-    (* TODO - Create convert button, action will just calculate, store text, force paint? *)
+    inputhwnd := CreateWindowEx(WS_EX_CLIENTEDGE, "Edit", "", WS_CHILD, 110, 5, 80, 20, hwnd, NIL, MyInstance(), NIL);
+    (* TODO - Create convert button, action will just read (via GetDlgItemInt), calculate, store text, force paint? *)
     ShowWindow(hwnd, SW_SHOWNORMAL);
+    ShowWindow(inputhwnd, SW_SHOWNORMAL);
             
     (* The Message Loop *)
     WHILE GetMessage( Msg, NIL, 0, 0) DO
