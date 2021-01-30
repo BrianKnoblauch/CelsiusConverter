@@ -1,9 +1,9 @@
 MODULE CelsiusConverter;
 
 FROM SYSTEM  IMPORT ADR;
-FROM Windows IMPORT CreateWindowEx, CS_SAVEBITS, CW_USEDEFAULT, DefWindowProc, DestroyWindow, DispatchMessage, GetMessage, HWND, HWND_TOPMOST, IDC_ARROW,
+FROM Windows IMPORT CreateWindowEx, CS_SAVEBITS, CW_USEDEFAULT, DefWindowProc, DestroyWindow, DispatchMessage, GetMessage, HWND, IDC_ARROW,
                     IDI_APPLICATION, LoadCursor, LoadIcon, LPARAM, LRESULT, MB_ICONEXCLAMATION, MB_OK, MessageBox, MSG, MyInstance, PostQuitMessage,
-                    RegisterClass, SetWindowPos, ShowWindow, SW_SHOWNORMAL, SWP_NOZORDER, TranslateMessage, UINT, WM_CLOSE, WM_DESTROY, WNDCLASS, WPARAM,
+                    RegisterClass, ShowWindow, SW_SHOWNORMAL, TranslateMessage, UINT, WM_CLOSE, WM_DESTROY, WNDCLASS, WPARAM,
 		    WS_EX_CLIENTEDGE, WS_OVERLAPPEDWINDOW;
 
 CONST
@@ -42,19 +42,17 @@ BEGIN
 
     IF RegisterClass(wc)=0 THEN
        MessageBox(NIL, "Window Class registration failed!", "Error!", MB_ICONEXCLAMATION + MB_OK);
-
        RETURN ;
     END;
 
     (* Create the Window *)
-    hwnd := CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "Chaos", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 240, 120, NIL,
+    hwnd := CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "Celsius Converter", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NIL,
 			   NIL, MyInstance(), NIL);
     IF hwnd = NIL THEN
        MessageBox(NIL, "Window Creation failed!", "Error!", MB_ICONEXCLAMATION + MB_OK);
        RETURN ;
     END;
 
-    SetWindowPos(hwnd, HWND_TOPMOST, 80, 40, 640, 480, SWP_NOZORDER);
     ShowWindow(hwnd, SW_SHOWNORMAL);
             
     (* The Message Loop *)
