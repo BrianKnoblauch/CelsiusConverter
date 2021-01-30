@@ -1,17 +1,30 @@
 MODULE CelsiusConverter;
 
-FROM SYSTEM  IMPORT ADR;
-FROM Windows IMPORT CreateWindowEx, CS_SAVEBITS, CW_USEDEFAULT, DefWindowProc, DestroyWindow, DispatchMessage, GetMessage, HWND, IDC_ARROW,
-                    IDI_APPLICATION, LoadCursor, LoadIcon, LPARAM, LRESULT, MB_ICONEXCLAMATION, MB_OK, MessageBox, MSG, MyInstance, PostQuitMessage,
-                    RegisterClass, ShowWindow, SW_SHOWNORMAL, TranslateMessage, UINT, WM_CLOSE, WM_DESTROY, WNDCLASS, WPARAM,
-		    WS_EX_CLIENTEDGE, WS_OVERLAPPEDWINDOW;
+FROM SYSTEM  IMPORT ADR, CAST;
+FROM Windows IMPORT BeginPaint, CreateWindowEx, CS_SET, CW_USEDEFAULT, DefWindowProc, DestroyWindow, DispatchMessage, EndPaint, GetMessage, HDC, HWND,
+                    IDC_ARROW, IDI_APPLICATION, LoadCursor, LoadIcon, LPARAM, LRESULT, MB_ICONEXCLAMATION, MB_OK, MessageBox, MSG, MyInstance, PAINTSTRUCT,
+		    PostQuitMessage, RegisterClass, ShowWindow, SW_SHOWNORMAL, TextOut, TranslateMessage, UINT, WM_CLOSE, WM_DESTROY, WM_PAINT, WNDCLASS,
+		    WPARAM, WS_EX_CLIENTEDGE, WS_OVERLAPPEDWINDOW;
 
 CONST
      g_szClassName = "myWindowClass";
 
 PROCEDURE ["StdCall"] WndProc(hwnd : HWND; msg : UINT; wParam : WPARAM;  lParam : LPARAM): LRESULT;
+VAR
+     hdc : HDC;	
+     ps  : PAINTSTRUCT;
+
 BEGIN
     CASE msg OF
+    | WM_PAINT   :      
+      hdc := BeginPaint(hwnd, ps);
+      TextOut(hdc, 5, 5, "Celsius", 7);
+      TextOut(hdc, 90, 5, ":", 1);
+      TextOut(hdc, 5, 45, "Fahrenheit", 10);
+      TextOut(hdc, 90, 45, ":", 1);            
+      (* TODO - f output text (we can calculate length) that convert button setup for us *)      
+      EndPaint(hwnd, ps);      
+      RETURN 0;
     | WM_CLOSE   :
       DestroyWindow(hwnd);
     | WM_DESTROY :
@@ -29,7 +42,7 @@ VAR
 
 BEGIN
     (* Register the Window Class *)
-    wc.style         := CS_SAVEBITS;
+    wc.style         := CAST(CS_SET, NIL);
     wc.lpfnWndProc   := WndProc;
     wc.cbClsExtra    := 0;
     wc.cbWndExtra    := 0;
@@ -44,15 +57,17 @@ BEGIN
        MessageBox(NIL, "Window Class registration failed!", "Error!", MB_ICONEXCLAMATION + MB_OK);
        RETURN ;
     END;
-
+               
     (* Create the Window *)
-    hwnd := CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "Celsius Converter", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, NIL,
+    hwnd := CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "Celsius Converter", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 240, 160, NIL,
 			   NIL, MyInstance(), NIL);
     IF hwnd = NIL THEN
        MessageBox(NIL, "Window Creation failed!", "Error!", MB_ICONEXCLAMATION + MB_OK);
        RETURN ;
     END;
 
+    (* TODO - Create c input box/window *)
+    (* TODO - Create convert button, action will just calculate, store text, force paint? *)
     ShowWindow(hwnd, SW_SHOWNORMAL);
             
     (* The Message Loop *)
