@@ -3,14 +3,14 @@ MODULE CelsiusConverter;
 FROM SYSTEM  IMPORT ADR, CAST;
 FROM Windows IMPORT BeginPaint, CreateWindowEx, CS_SET, CW_USEDEFAULT, DefWindowProc, DestroyWindow, DispatchMessage, EndPaint, GetMessage, HDC, HWND,
                     IDC_ARROW, IDI_APPLICATION, LoadCursor, LoadIcon, LPARAM, LRESULT, MB_ICONEXCLAMATION, MB_OK, MessageBox, MSG, MyInstance, PAINTSTRUCT,
-		    PostQuitMessage, RegisterClass, ShowWindow, SW_SHOWNORMAL, TextOut, TranslateMessage, UINT, WM_CLOSE, WM_DESTROY, WM_PAINT, WNDCLASS,
-		    WPARAM, WS_CHILD, WS_EX_CLIENTEDGE, WS_OVERLAPPEDWINDOW;
+		    PostQuitMessage, RegisterClass, SetWindowTextA, ShowWindow, SW_SHOWNORMAL, TextOut, TranslateMessage, UINT, WM_CLOSE, WM_DESTROY,
+		    WM_PAINT, WNDCLASS, WPARAM, WS_CHILD, WS_EX_CLIENTEDGE, WS_OVERLAPPEDWINDOW;
 
 CONST
      g_szClassName = "myWindowClass";
 
 VAR
-     fahrenheit : ARRAY [0..4] OF CHAR;
+     fahrenheit : ARRAY [0..10] OF CHAR;
 
 PROCEDURE ["StdCall"] WndProc(hwnd : HWND; msg : UINT; wParam : WPARAM;  lParam : LPARAM): LRESULT;
 VAR
@@ -25,7 +25,7 @@ BEGIN
       TextOut(hdc, 90, 5, ":", 1);
       TextOut(hdc, 5, 45, "Fahrenheit", 10);
       TextOut(hdc, 90, 45, ":", 1);            
-      TextOut(hdc, 110, 45, fahrenheit, 4);
+      TextOut(hdc, 110, 45, fahrenheit, 10);
       EndPaint(hwnd, ps);      
       RETURN 0;
     | WM_CLOSE   :
@@ -39,6 +39,7 @@ END WndProc;
 
 VAR
     className       : ARRAY [0..14] OF CHAR;
+    buttonhwnd      : HWND;
     hwnd            : HWND;
     inputhwnd       : HWND;
     Msg             : MSG;
@@ -70,10 +71,13 @@ BEGIN
        RETURN ;
     END;
 
-    inputhwnd := CreateWindowEx(WS_EX_CLIENTEDGE, "Edit", "", WS_CHILD, 110, 5, 80, 20, hwnd, NIL, MyInstance(), NIL);
-    (* TODO - Create convert button, action will just read (via GetDlgItemInt), calculate, store text, force paint? *)
+    inputhwnd := CreateWindowEx(WS_EX_CLIENTEDGE, "Edit", "", WS_CHILD, 110, 5, 80, 20, hwnd, NIL, MyInstance(), NIL);    
+    buttonhwnd := CreateWindowEx(WS_EX_CLIENTEDGE, "Button", "", WS_CHILD, 125, 85, 80, 20, hwnd, NIL, MyInstance(), NIL);
+    SetWindowTextA(buttonhwnd, "Convert");
     ShowWindow(hwnd, SW_SHOWNORMAL);
     ShowWindow(inputhwnd, SW_SHOWNORMAL);
+    ShowWindow(buttonhwnd, SW_SHOWNORMAL);
+    (* TODO - Convert button action will just read (via GetDlgItemInt), calculate, store text, force paint? *)
             
     (* The Message Loop *)
     WHILE GetMessage( Msg, NIL, 0, 0) DO
