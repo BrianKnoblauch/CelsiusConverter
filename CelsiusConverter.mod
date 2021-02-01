@@ -18,17 +18,17 @@ PROCEDURE ["StdCall"] WndProc(hwnd : HWND; msg : UINT; wParam : WPARAM;  lParam 
 VAR
      hdc            : HDC;
      input          : INTEGER;
+     output         : INTEGER;
      ps             : PAINTSTRUCT;
      success        : BOOL;
 
 BEGIN
     CASE msg OF
     | WM_COMMAND :
-      (* TODO - Limit this to button clicks *)
-      (* TODO - calculate, store text *)
       input := GetDlgItemInt(hwnd, 0, success, TRUE);
-      input := input+1;
-      IF success THEN	   
+      IF success THEN
+	   output := TRUNC(FLOAT(input) * 1.8)+32;
+	   (* TODO - format text into fahrenheit string *)
 	   fahrenheit := "test";	   
       ELSE
 	   fahrenheit := "          ";	   
@@ -56,7 +56,6 @@ END WndProc;
 
 VAR
     className       : ARRAY [0..14] OF CHAR;
-    buttonhwnd      : HWND;
     hwnd            : HWND;
     inputhwnd       : HWND;
     Msg             : MSG;
@@ -82,7 +81,7 @@ BEGIN
                
     (* Create the Window *)
     hwnd := CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "Celsius Converter", WS_VISIBLE + WS_SYSMENU, CW_USEDEFAULT, CW_USEDEFAULT,
-			   240, 160, NIL, NIL, MyInstance(), NIL);
+			   240, 120, NIL, NIL, MyInstance(), NIL);
     IF hwnd = NIL THEN
        MessageBox(NIL, "Window Creation failed!", "Error!", MB_ICONEXCLAMATION + MB_OK);
        RETURN ;
@@ -93,10 +92,8 @@ BEGIN
     invalidaterect.right := 190;
     invalidaterect.bottom := 65;					    
     inputhwnd := CreateWindowEx(WS_EX_CLIENTEDGE, "Edit", "", WS_CHILD, 110, 5, 80, 20, hwnd, NIL, MyInstance(), NIL);    
-    buttonhwnd := CreateWindowEx(WS_EX_CLIENTEDGE, "Button", "Convert", WS_CHILD, 125, 85, 80, 20, hwnd, NIL, MyInstance(), NIL);
     ShowWindow(hwnd, SW_SHOWNORMAL);
     ShowWindow(inputhwnd, SW_SHOWNORMAL);
-    ShowWindow(buttonhwnd, SW_SHOWNORMAL);
             
     (* The Message Loop *)
     WHILE GetMessage( Msg, NIL, 0, 0) DO
