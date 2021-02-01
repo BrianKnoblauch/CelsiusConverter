@@ -1,9 +1,9 @@
 MODULE CelsiusConverter;
 
-FROM RealStr IMPORT RealToStr;
+FROM RealStr IMPORT ConvResults, RealToStr, StrToReal;
 FROM SYSTEM  IMPORT ADR, CAST;
-FROM Windows IMPORT BeginPaint, BOOL, CreateSolidBrush, CreateWindowEx, CS_SET, CW_USEDEFAULT, DefWindowProc, DestroyWindow, DispatchMessage, EndPaint,
-                    FillRect, GetBkColor, GetDlgItemInt, GetMessage, HDC, HWND, IDC_ARROW, IDI_APPLICATION, InvalidateRect, LoadCursor, LoadIcon, LPARAM,
+FROM Windows IMPORT BeginPaint, CreateSolidBrush, CreateWindowEx, CS_SET, CW_USEDEFAULT, DefWindowProc, DestroyWindow, DispatchMessage, EndPaint,
+                    FillRect, GetBkColor, GetDlgItemTextA, GetMessage, HDC, HWND, IDC_ARROW, IDI_APPLICATION, InvalidateRect, LoadCursor, LoadIcon, LPARAM,
                     LRESULT, MB_ICONEXCLAMATION, MB_OK, MessageBox, MSG, MyInstance, PAINTSTRUCT, PostQuitMessage, RECT, RegisterClass, ShowWindow,
 		    SW_SHOWNORMAL, TextOut, TranslateMessage, UINT, WM_CLOSE, WM_COMMAND, WM_DESTROY, WM_PAINT, WNDCLASS, WPARAM, WS_CHILD,
 		    WS_EX_CLIENTEDGE, WS_SYSMENU, WS_VISIBLE;
@@ -18,17 +18,19 @@ VAR
 PROCEDURE ["StdCall"] WndProc(hwnd : HWND; msg : UINT; wParam : WPARAM;  lParam : LPARAM): LRESULT;
 VAR
      hdc            : HDC;
-     input          : INTEGER;
+     input          : ARRAY [0..10] OF CHAR;
      ps             : PAINTSTRUCT;
-     success        : BOOL;
+     result         : ConvResults;
+     value          : REAL;
 
 BEGIN
     CASE msg OF
     | WM_COMMAND :
-      (* TODO - Crashes on negative values *)
-      input := GetDlgItemInt(hwnd, 0, success, TRUE);
-      IF success THEN
-	   RealToStr(FLOAT(input) * 1.8 + 32.0, fahrenheit);
+      GetDlgItemTextA(hwnd, 0, input, 10);
+      StrToReal(input, value, result); 
+      IF result = strAllRight THEN
+	   value := value * 1.8 + 32.0;
+	   RealToStr(value, fahrenheit);
       ELSE
 	   fahrenheit := "          ";	   
       END; (* IF *)
