@@ -1,5 +1,6 @@
 MODULE CelsiusConverter;
 
+FROM RealStr IMPORT RealToStr;
 FROM SYSTEM  IMPORT ADR, CAST;
 FROM Windows IMPORT BeginPaint, BOOL, CreateSolidBrush, CreateWindowEx, CS_SET, CW_USEDEFAULT, DefWindowProc, DestroyWindow, DispatchMessage, EndPaint,
                     FillRect, GetBkColor, GetDlgItemInt, GetMessage, HDC, HWND, IDC_ARROW, IDI_APPLICATION, InvalidateRect, LoadCursor, LoadIcon, LPARAM,
@@ -18,18 +19,16 @@ PROCEDURE ["StdCall"] WndProc(hwnd : HWND; msg : UINT; wParam : WPARAM;  lParam 
 VAR
      hdc            : HDC;
      input          : INTEGER;
-     output         : INTEGER;
      ps             : PAINTSTRUCT;
      success        : BOOL;
 
 BEGIN
     CASE msg OF
     | WM_COMMAND :
+      (* TODO - Crashes on negative values *)
       input := GetDlgItemInt(hwnd, 0, success, TRUE);
       IF success THEN
-	   output := TRUNC(FLOAT(input) * 1.8)+32;
-	   (* TODO - format text into fahrenheit string *)
-	   fahrenheit := "test";	   
+	   RealToStr(FLOAT(input) * 1.8 + 32.0, fahrenheit);
       ELSE
 	   fahrenheit := "          ";	   
       END; (* IF *)
