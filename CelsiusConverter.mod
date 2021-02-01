@@ -4,7 +4,7 @@ FROM SYSTEM  IMPORT ADR, CAST;
 FROM Windows IMPORT BeginPaint, CreateWindowEx, CS_SET, CW_USEDEFAULT, DefWindowProc, DestroyWindow, DispatchMessage, EndPaint, GetMessage, HDC, HWND,
                     IDC_ARROW, IDI_APPLICATION, LoadCursor, LoadIcon, LPARAM, LRESULT, MB_ICONEXCLAMATION, MB_OK, MessageBox, MSG, MyInstance, PAINTSTRUCT,
 		    PostQuitMessage, RegisterClass, SetWindowTextA, ShowWindow, SW_SHOWNORMAL, TextOut, TranslateMessage, UINT, WM_CLOSE, WM_DESTROY,
-		    WM_PAINT, WNDCLASS, WPARAM, WS_CHILD, WS_EX_CLIENTEDGE, WS_OVERLAPPEDWINDOW;
+		    WM_PAINT, WNDCLASS, WPARAM, WS_CHILD, WS_EX_CLIENTEDGE, WS_SYSMENU, WS_VISIBLE;
 
 CONST
      g_szClassName = "myWindowClass";
@@ -64,7 +64,7 @@ BEGIN
     END;
                
     (* Create the Window *)
-    hwnd := CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "Celsius Converter", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 240, 160, NIL,
+    hwnd := CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "Celsius Converter", WS_VISIBLE + WS_SYSMENU, CW_USEDEFAULT, CW_USEDEFAULT, 240, 160, NIL,
 			   NIL, MyInstance(), NIL);
     IF hwnd = NIL THEN
        MessageBox(NIL, "Window Creation failed!", "Error!", MB_ICONEXCLAMATION + MB_OK);
