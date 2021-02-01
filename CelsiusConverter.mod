@@ -1,10 +1,11 @@
 MODULE CelsiusConverter;
 
 FROM SYSTEM  IMPORT ADR, CAST;
-FROM Windows IMPORT BeginPaint, CreateWindowEx, CS_SET, CW_USEDEFAULT, DefWindowProc, DestroyWindow, DispatchMessage, EndPaint, GetMessage, HDC, HWND,
-                    IDC_ARROW, IDI_APPLICATION, LoadCursor, LoadIcon, LPARAM, LRESULT, MB_ICONEXCLAMATION, MB_OK, MessageBox, MSG, MyInstance, PAINTSTRUCT,
-		    PostQuitMessage, RegisterClass, SetWindowTextA, ShowWindow, SW_SHOWNORMAL, TextOut, TranslateMessage, UINT, WM_CLOSE, WM_DESTROY,
-		    WM_PAINT, WNDCLASS, WPARAM, WS_CHILD, WS_EX_CLIENTEDGE, WS_SYSMENU, WS_VISIBLE;
+FROM Windows IMPORT BeginPaint, BN_CLICKED, CreateWindowEx, CS_SET, CW_USEDEFAULT, DefWindowProc, DestroyWindow, DispatchMessage, EndPaint, GetMessage,
+                    HDC, HWND, IDC_ARROW, IDI_APPLICATION, LoadCursor, LoadIcon, LPARAM, LRESULT, MB_ICONEXCLAMATION, MB_OK, MessageBox, MSG, MyInstance,
+                    PAINTSTRUCT, PostQuitMessage, RDW_INTERNALPAINT, RDW_UPDATENOW, RedrawWindow, RegisterClass, ShowWindow, SW_SHOWNORMAL, TextOut,
+		    TranslateMessage, UINT, WM_CLOSE, WM_COMMAND, WM_DESTROY, WM_PAINT, WNDCLASS, WPARAM, WS_CHILD, WS_EX_CLIENTEDGE, WS_SYSMENU,
+		    WS_VISIBLE;
 
 CONST
      g_szClassName = "myWindowClass";
@@ -19,12 +20,18 @@ VAR
 
 BEGIN
     CASE msg OF
+    | WM_COMMAND :
+      (* TODO - Read (via GetDlgItemInt), calculate, store text, force paint? *)
+      fahrenheit := "test";
+      RedrawWindow(hwnd, NIL, NIL, RDW_INTERNALPAINT + RDW_UPDATENOW);
+      MessageBox(hwnd, fahrenheit, "OK", MB_OK );
+      RETURN 0;
     | WM_PAINT   :      
       hdc := BeginPaint(hwnd, ps);
       TextOut(hdc, 5, 5, "Celsius", 7);
       TextOut(hdc, 90, 5, ":", 1);
       TextOut(hdc, 5, 45, "Fahrenheit", 10);
-      TextOut(hdc, 90, 45, ":", 1);            
+      TextOut(hdc, 90, 45, ":", 1);
       TextOut(hdc, 110, 45, fahrenheit, 10);
       EndPaint(hwnd, ps);      
       RETURN 0;
@@ -64,20 +71,18 @@ BEGIN
     END;
                
     (* Create the Window *)
-    hwnd := CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "Celsius Converter", WS_VISIBLE + WS_SYSMENU, CW_USEDEFAULT, CW_USEDEFAULT, 240, 160, NIL,
-			   NIL, MyInstance(), NIL);
+    hwnd := CreateWindowEx(WS_EX_CLIENTEDGE, g_szClassName, "Celsius Converter", WS_VISIBLE + WS_SYSMENU, CW_USEDEFAULT, CW_USEDEFAULT,
+			   240, 160, NIL, NIL, MyInstance(), NIL);
     IF hwnd = NIL THEN
        MessageBox(NIL, "Window Creation failed!", "Error!", MB_ICONEXCLAMATION + MB_OK);
        RETURN ;
     END;
 
     inputhwnd := CreateWindowEx(WS_EX_CLIENTEDGE, "Edit", "", WS_CHILD, 110, 5, 80, 20, hwnd, NIL, MyInstance(), NIL);    
-    buttonhwnd := CreateWindowEx(WS_EX_CLIENTEDGE, "Button", "", WS_CHILD, 125, 85, 80, 20, hwnd, NIL, MyInstance(), NIL);
-    SetWindowTextA(buttonhwnd, "Convert");
+    buttonhwnd := CreateWindowEx(WS_EX_CLIENTEDGE, "Button", "Convert", WS_CHILD, 125, 85, 80, 20, hwnd, NIL, MyInstance(), NIL);
     ShowWindow(hwnd, SW_SHOWNORMAL);
     ShowWindow(inputhwnd, SW_SHOWNORMAL);
-    ShowWindow(buttonhwnd, SW_SHOWNORMAL);
-    (* TODO - Convert button action will just read (via GetDlgItemInt), calculate, store text, force paint? *)
+    ShowWindow(buttonhwnd, SW_SHOWNORMAL);    
             
     (* The Message Loop *)
     WHILE GetMessage( Msg, NIL, 0, 0) DO
